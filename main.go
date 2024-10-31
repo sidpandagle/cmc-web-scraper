@@ -39,7 +39,7 @@ func main() {
 	api := app.Group("/api")
 	routes.BookRouter(api, bookService)
 	defer cancel()
-	log.Fatal(app.Listen(":8080"))
+	log.Fatal(app.Listen(getPort()))
 }
 
 func databaseConnection() (*mongo.Database, context.CancelFunc, error) {
@@ -52,4 +52,16 @@ func databaseConnection() (*mongo.Database, context.CancelFunc, error) {
 	}
 	db := client.Database(os.Getenv("DB_NAME"))
 	return db, cancel, nil
+}
+
+
+func getPort() string {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = ":3001"
+	} else {
+		port = ":" + port
+	}
+
+	return port
 }
