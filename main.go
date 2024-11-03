@@ -3,6 +3,7 @@ package main
 import (
 	"cmc-web-scraper/api/routes"
 	"cmc-web-scraper/pkg/book"
+	"cmc-web-scraper/pkg/utils"
 	"context"
 	"fmt"
 	"log"
@@ -17,6 +18,7 @@ import (
 )
 
 func main() {
+	utils.GetStockData()
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("Error loading .env file: %s", err)
@@ -53,7 +55,6 @@ func databaseConnection() (*mongo.Database, context.CancelFunc, error) {
 	db := client.Database(os.Getenv("DB_NAME"))
 	return db, cancel, nil
 }
-
 
 func getPort() string {
 	port := os.Getenv("PORT")

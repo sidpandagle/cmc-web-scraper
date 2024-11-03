@@ -6,9 +6,7 @@ import (
 	"cmc-web-scraper/pkg/entities"
 	"net/http"
 
-	"github.com/gocolly/colly"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/log"
 	"github.com/pkg/errors"
 )
 
@@ -78,20 +76,6 @@ func RemoveBook(service book.Service) fiber.Handler {
 
 // GetBooks is handler/controller which lists all Books from the BookShop
 func GetBooks(service book.Service) fiber.Handler {
-	c := colly.NewCollector()
-	log.Info("Hello World!")
-
-	tickers := []Ticker{}
-	c.OnHTML(".external.text", func(e *colly.HTMLElement) {
-		ticker := Ticker{
-			Name:   "",
-			Ticker: e.Text,
-		}
-		tickers = append(tickers, ticker)
-		log.Info(e.Text)
-	})
-
-	c.Visit("https://en.wikipedia.org/wiki/List_of_companies_listed_on_the_National_Stock_Exchange_of_India")
 	return func(c *fiber.Ctx) error {
 		fetched, err := service.FetchBooks()
 		if err != nil {
