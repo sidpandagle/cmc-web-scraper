@@ -4,9 +4,12 @@ import (
 	"cmc-web-scraper/api/presenter"
 	"cmc-web-scraper/pkg/book"
 	"cmc-web-scraper/pkg/entities"
-	"github.com/gofiber/fiber/v2"
-	"github.com/pkg/errors"
 	"net/http"
+
+	"github.com/gocolly/colly"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
+	"github.com/pkg/errors"
 )
 
 // AddBook is handler/controller which creates Books in the BookShop
@@ -75,6 +78,20 @@ func RemoveBook(service book.Service) fiber.Handler {
 
 // GetBooks is handler/controller which lists all Books from the BookShop
 func GetBooks(service book.Service) fiber.Handler {
+	c := colly.NewCollector()
+	log.Info("Hello World!")
+
+	tickers := []Ticker{}
+	c.OnHTML(".external.text", func(e *colly.HTMLElement) {
+		ticker := Ticker{
+			Name:   "",
+			Ticker: e.Text,
+		}
+		tickers = append(tickers, ticker)
+		log.Info(e.Text)
+	})
+
+	c.Visit("https://en.wikipedia.org/wiki/List_of_companies_listed_on_the_National_Stock_Exchange_of_India")
 	return func(c *fiber.Ctx) error {
 		fetched, err := service.FetchBooks()
 		if err != nil {
@@ -83,4 +100,9 @@ func GetBooks(service book.Service) fiber.Handler {
 		}
 		return c.JSON(presenter.BooksSuccessResponse(fetched))
 	}
+}
+
+type Ticker struct {
+	Name   string `json:"name"`
+	Ticker string `json:"ticker"`
 }
